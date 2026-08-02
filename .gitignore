@@ -1,0 +1,12 @@
+.yyz
+/options/
+/export/
+/.vs/
+/crashes/
+/logs/
+
+*.user
+*.config
+
+Thumbs.db
+.DS_Store
