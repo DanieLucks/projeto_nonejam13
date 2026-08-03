@@ -1,3 +1,5 @@
+if (position_meeting(mouse_x, mouse_y, obj_engrenagem_drop)) exit;
+
 if (esta_quebrada) {
     instance_destroy();
     exit;

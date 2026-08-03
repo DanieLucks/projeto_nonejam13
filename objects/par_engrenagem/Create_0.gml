@@ -10,7 +10,7 @@ durabilidade_maxima_frames = 0;
 durabilidade_atual = 0;
 velocidade_rotacao = 0;
 sentido_rotacao = 1;
-desgaste_multiplicador = 1;
+desgaste_multiplicador = 0.0001;
 
 // --- Drag and Drop ---
 sendo_arrastada = false;

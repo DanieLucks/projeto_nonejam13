@@ -1,12 +1,15 @@
 function scr_inicializar_engrenagem() {
-    var durabilidade_segundos = random_range(durabilidade_min, durabilidade_max);
-    durabilidade_maxima_frames = durabilidade_segundos * game_get_speed(gamespeed_fps);
-    durabilidade_atual = durabilidade_maxima_frames;
+if (durabilidade_maxima_frames == 0) {
+        var durabilidade_segundos = random_range(durabilidade_min, durabilidade_max);
+        durabilidade_maxima_frames = durabilidade_segundos * game_get_speed(gamespeed_fps);
+        durabilidade_atual = durabilidade_maxima_frames;
+    }
 
     if (instance_exists(engrenagem_pai)) {
         sentido_rotacao = -engrenagem_pai.sentido_rotacao;
+        
         var vel_pai = (engrenagem_pai.object_index == obj_nucleo) ? engrenagem_pai.velocidade_base : engrenagem_pai.velocidade_rotacao;
-        velocidade_rotacao = vel_pai * (engrenagem_pai.raio / raio);
+        velocidade_rotacao = vel_pai; 
     }
 }
 
@@ -42,7 +45,7 @@ function scr_processar_engrenagem() {
         image_angle -= (velocidade_rotacao * sentido_rotacao);
         
         var descendentes = scr_contar_descendentes();
-        desgaste_multiplicador = 1 + (descendentes * 0.5);
+        desgaste_multiplicador = .05 + (descendentes * 0.01);
         durabilidade_atual -= (1 * desgaste_multiplicador);
         
         if (durabilidade_atual <= 0) {
@@ -61,8 +64,26 @@ function scr_calcular_sentido_teorico(inst_pai) {
 
 function scr_validar_posicao_encaixe(x_pos, y_pos, inst_pai_candidato) {
     if (!instance_exists(inst_pai_candidato)) return false;
+
+    var y_minimo = 224;
+    var y_maximo = 480;
+    
+    if (y_pos < y_minimo || y_pos > y_maximo) {
+        return false;
+    }
+    
+    if (object_is_ancestor(inst_pai_candidato.object_index, par_automato) || inst_pai_candidato.object_index == par_automato) {
+        return false;
+    }
     
     if (scr_eh_descendente(inst_pai_candidato, id)) {
+        return false;
+    }
+    
+    var mesmo_x = (abs(x_pos - inst_pai_candidato.x) <= 4);
+    var mesmo_y = (abs(y_pos - inst_pai_candidato.y) <= 4);
+    
+    if (!mesmo_x && !mesmo_y) {
         return false;
     }
     
@@ -94,20 +115,23 @@ function scr_soltar_engrenagem() {
     
     if (instance_exists(pai_candidato) && posicao_valida) {
         engrenagem_pai = pai_candidato;
-        x = x_ancora;
-        y = y_ancora;
+        
+        var tamanho_grid = 32; 
+        
+
+        x = round(x_ancora / tamanho_grid) * tamanho_grid;
+        y = round(y_ancora / tamanho_grid) * tamanho_grid;
         
         scr_inicializar_engrenagem();
-
+        
         var meu_id = id;
         with (par_engrenagem) {
             if (id != meu_id && !esta_quebrada && !sendo_arrastada) {
-          
                 if (!instance_exists(engrenagem_pai) || engrenagem_pai.esta_quebrada || engrenagem_pai == noone) {
                     var dist = point_distance(x, y, other.x, other.y);
                     var soma_raios = raio + other.raio;
                     
-                    if (dist <= soma_raios + 2) {
+                    if (dist <= soma_raios + 4) {
                         engrenagem_pai = meu_id;
                     }
                 }
