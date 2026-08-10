@@ -1,43 +1,34 @@
+if (global.pausado) exit;
 
-if (keyboard_check_released(ord("F"))) {
-    var _drop_x = irandom_range(128, room_width - 128);
-    var _drop_y = irandom_range(128, room_height - 128);
-    
+rot += velocidade_base * 1.5 * sentido_rotacao;
+rot = (rot + 360) % 360;
 
-    _drop_x = round(_drop_x / 32) * 32;
-    _drop_y = round(_drop_y / 32) * 32;
-    
-    var _nova_engrenagem = instance_create_layer(_drop_x, _drop_y, "Instances", obj_engrenagem);
-    
-    with (_nova_engrenagem) {
-        estava_no_mapa = false; // Indica que é um item novo
-    }
-}
+depth = -y +1;
 
 if (keyboard_check_released(ord("R"))) {
-    var _drop_x = irandom_range(128, room_width - 128);
-    var _drop_y = irandom_range(128, room_height - 128);
-    
-    _drop_x = round(_drop_x / 32) * 32;
-    _drop_y = round(_drop_y / 32) * 32;
-    
-    var _novo_automato = instance_create_layer(_drop_x, _drop_y, "Instances", obj_automato_tiro);
-    
-    with (_novo_automato) {
-        estava_no_mapa = false;
-    }
+	game_restart()
 }
 
-if (keyboard_check_released(ord("E"))) {
-    var _drop_x = irandom_range(128, room_width - 128);
-    var _drop_y = irandom_range(128, room_height - 128);
+if (keyboard_check_released(ord("F"))) {
+	obj_controller.engrenagens_estoque += 10
+}
+
+
+timer_shake -= 1;
+	
+if (timer_shake <= 0) {
+    timer_shake = intervalo_shake;
+        
+    offset_shake_x = random_range(-tremor_intensidade, tremor_intensidade);
+    offset_shake_y = random_range(0, tremor_intensidade);
+}
     
-    _drop_x = round(_drop_x / 32) * 32;
-    _drop_y = round(_drop_y / 32) * 32;
-    
-    var _novo_automato = instance_create_layer(_drop_x, _drop_y, "Instances", obj_automato_refinaria);
-    
-    with (_novo_automato) {
-        estava_no_mapa = false;
-    }
+timer_fumaca -= 1;
+if (timer_fumaca <= 0) {
+    timer_fumaca = random_range(15, 30);
+        
+    var chamine_x = x + offset_shake_x;
+    var chamine_y = y - 96 + offset_shake_y;
+        
+    effect_create_above(ef_smokeup, chamine_x, chamine_y , 0.4, c_ltgray);
 }

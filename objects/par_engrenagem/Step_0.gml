@@ -1,49 +1,103 @@
+if (global.pausado) exit;
+
 if (sendo_arrastada) {
     var tamanho_grid = 32;
-	
-    var grid_x = round(mouse_x / tamanho_grid) * tamanho_grid;
-    var grid_y = round(mouse_y / tamanho_grid) * tamanho_grid;
-    
     x = mouse_x;
     y = mouse_y;
+    depth = -9999;
     
     pai_candidato = noone;
-    var menor_distancia = 9999;
-
+    posicao_valida = false;
+    
+    var menor_distancia_mouse_slot = 9999;
+    var raio_busca = 80; 
+    
+    var mx = mouse_x;
+    var my = mouse_y;
+    var meu_id = id;
+    
     if (instance_exists(obj_nucleo)) {
         with (obj_nucleo) {
-            var em_linha_reta_nucleo = (abs(grid_x - x) <= 4 || abs(grid_y - y) <= 4);
-            var dist_nucleo = point_distance(grid_x, grid_y, x, y);
-            var alcance_nucleo = other.raio + raio + 8;
+            var cx = x + tamanho_grid;
+            var cy = y;
             
-            if (em_linha_reta_nucleo && dist_nucleo <= alcance_nucleo) {
-                other.pai_candidato = id;
-                menor_distancia = dist_nucleo;
+            var dist_slot = point_distance(mx, my, cx, cy);
+            var dist_centro_nucleo = point_distance(mx, my, x, y);
+            
+            if (dist_centro_nucleo <= raio_busca + raio) {
+                if (dist_slot < menor_distancia_mouse_slot) {
+                    with (meu_id) {
+                        if (scr_validar_posicao_encaixe(cx, cy, other.id)) {
+                            pai_candidato = other.id;
+                            x_ancora = cx;
+                            other.x_ancora = cx;
+                            y_ancora = cy;
+                            other.y_ancora = cy;
+                            menor_distancia_mouse_slot = dist_slot;
+                        }
+                    }
+                }
             }
         }
     }
     
     with (par_engrenagem) {
-        if (id != other.id && !esta_quebrada && tem_energia && !scr_eh_descendente(id, other.id)) {
-            var em_linha_reta = (abs(grid_x - x) <= 4 || abs(grid_y - y) <= 4);
-            var dist = point_distance(grid_x, grid_y, x, y);
-            var alcance_conectar = other.raio + raio + 8;
+        var eh_automato = (object_index == par_automato || object_is_ancestor(object_index, par_automato));
+        
+        if (id != meu_id && !esta_quebrada && tem_energia && !eh_automato) {
+            var eh_desc = false;
+            with (meu_id) {
+                if (scr_eh_descendente(other.id, id)) eh_desc = true;
+            }
             
-            if (em_linha_reta && dist <= alcance_conectar && dist < menor_distancia) {
-                other.pai_candidato = id;
-                menor_distancia = dist;
+            if (!eh_desc) {
+                var dist_mouse_centro = point_distance(mx, my, x, y);
+                
+                if (dist_mouse_centro <= raio_busca) {
+                    var slots_x = [x + tamanho_grid, x - tamanho_grid, x, x];
+                    var slots_y = [y, y, y + tamanho_grid, y - tamanho_grid];
+                    
+                    for (var i = 0; i < 4; i++) {
+                        var cx = slots_x[i];
+                        var cy = slots_y[i];
+                        
+                        var dist_slot = point_distance(mx, my, cx, cy);
+                        
+                        if (dist_slot < menor_distancia_mouse_slot) {
+                            with (meu_id) {
+                                if (scr_validar_posicao_encaixe(cx, cy, other.id)) {
+                                    pai_candidato = other.id;
+                                    x_ancora = cx;
+                                    y_ancora = cy;
+                                    menor_distancia_mouse_slot = dist_slot;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
-   
-    if (instance_exists(pai_candidato)) {
-        x_ancora = grid_x;
-        y_ancora = grid_y;
-        posicao_valida = scr_validar_posicao_encaixe(grid_x, grid_y, pai_candidato);
-    } else {
-        posicao_valida = false;
-    }
+    
+    posicao_valida = (instance_exists(pai_candidato));
 } 
 else {
     scr_processar_engrenagem();
+    
+    if (tem_energia && !esta_quebrada) {
+        if (!alinhado_com_pai && instance_exists(engrenagem_pai)) {
+            var dir_pai = point_direction(engrenagem_pai.x, engrenagem_pai.y, x, y);
+            rot = (engrenagem_pai.rot + 180 + 15) % 360; 
+            alinhado_com_pai = true;
+        }
+
+        velocidade_rotacao = global.velocidade_global_engrenagem;
+        
+        rot += velocidade_rotacao * sentido_rotacao;
+        rot = (rot + 360) % 360;
+    } else {
+        alinhado_com_pai = false;
+    }
+    
+    depth = -y - 1;
 }

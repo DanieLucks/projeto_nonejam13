@@ -1,6 +1,8 @@
 event_inherited();
 
+image_xscale = 1.5
+image_yscale = 1.5
+
 pifado = false;
 timer_conserto = 0;
-
-tempo_para_pifar = random_range(10, 20) * game_get_speed(gamespeed_fps);
+tempo_para_pifar = random_range(60, 120) * game_get_speed(gamespeed_fps);

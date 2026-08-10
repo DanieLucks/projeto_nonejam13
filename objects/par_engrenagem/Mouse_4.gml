@@ -1,6 +1,7 @@
-if (position_meeting(mouse_x, mouse_y, obj_engrenagem_drop)) exit;
-
 if (esta_quebrada) {
+    x = -9999;
+    y = -9999;
+    scr_recalcular_cadeia();
     instance_destroy();
     exit;
 }
@@ -8,6 +9,12 @@ if (esta_quebrada) {
 var alguma_arrastando = false;
 with (par_engrenagem) {
     if (sendo_arrastada) alguma_arrastando = true;
+}
+
+if (sendo_arrastada) {
+    depth = -9999;
+} else {
+    depth = -y;
 }
 
 if (!alguma_arrastando) {
@@ -18,17 +25,16 @@ if (!alguma_arrastando) {
     engrenagem_pai_original = engrenagem_pai;
     estava_no_mapa = true;
     
-    tem_energia = false; 
+    engrenagem_pai = noone;
+    tem_energia = false;
     
-    var meu_id = id;
-    with (par_engrenagem) {
-        if (engrenagem_pai == meu_id) {
-            engrenagem_pai = noone;
-            tem_energia = false;
-        }
-    }
-    
-    engrenagem_pai = noone; 
+    var old_x = x;
+    var old_y = y;
+    x = -9999;
+    y = -9999;
     
     scr_recalcular_cadeia();
+    
+    x = mouse_x;
+    y = mouse_y;
 }

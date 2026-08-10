@@ -1,0 +1,2 @@
+// ▶️ DESATIVA A PAUSA E RETORNA O JOGO AO NORMAL AO FECHAR
+global.pausado = false;

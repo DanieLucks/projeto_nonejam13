@@ -23,8 +23,8 @@
   "resourceType":"GMTileSet",
   "resourceVersion":"2.0",
   "spriteId":{
-    "name":"Sprite6",
-    "path":"sprites/Sprite6/Sprite6.yy",
+    "name":"spr_floor",
+    "path":"sprites/spr_floor/spr_floor.yy",
   },
   "spriteNoExport":false,
   "textureGroupId":{
@@ -33,10 +33,10 @@
   },
   "tileAnimationFrames":[],
   "tileAnimationSpeed":15.0,
-  "tileHeight":32,
+  "tileHeight":16,
   "tilehsep":0,
   "tilevsep":0,
-  "tileWidth":32,
+  "tileWidth":16,
   "tilexoff":0,
   "tileyoff":0,
   "tile_count":12,

@@ -1,7 +1,10 @@
-if (pifado) {
-    pifado = false;
-    image_blend = c_white;
-    tempo_para_pifar = random_range(20, 35) * game_get_speed(gamespeed_fps);
+if (pifado && tem_energia && !instance_exists(obj_minigame_pressao)) {
+    var minigame = instance_create_layer(0, 0, "Instances", obj_minigame_pressao);
+    minigame.automato_alvo = id;
+    exit;
+}
+
+if (estava_no_mapa) {
     exit;
 }
 

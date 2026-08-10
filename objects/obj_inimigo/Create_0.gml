@@ -1,3 +1,0 @@
-velocidade = .2;
-vida_max = 3;
-vida = vida_max;
